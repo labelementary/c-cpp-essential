@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - uses: actions/checkout@v4
+
+    # Install dependencies (CMake, GCC, G++, clang-format, cppcheck)
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++ clang-format cppcheck
+
+    # Format C/C++ files using clang-format
+    - name: Format code
+      run: |
+        find src/ include/ -type f \( -name "*.cpp" -o -name "*.h" \) -exec clang-format -i --style=Google {} \;
+        git diff --exit-code || (echo "Code formatting issues detected. Please run clang-format locally." && exit 1)
+
+    # Configure the project with CMake
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+
+    # Build the project
+    - name: Build
+      run: |
+        cd build
+        make -j$(nproc)
+
+    # Run cppcheck for linting
+    - name: Lint with cppcheck
+      run: |
+        cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 src/ include/
