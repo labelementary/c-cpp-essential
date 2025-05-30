@@ -23,7 +23,7 @@ jobs:
     # Format C/C++ files using clang-format
     - name: Format code
       run: |
-        find src/ include/ -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -i --style=Google {} \;
+        find src/ -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -i --style=Google {} \;
         git diff --exit-code || (echo "Code formatting issues detected. Please run clang-format locally." && exit 1)
 
     # Configure the project with CMake
@@ -42,4 +42,4 @@ jobs:
     # Run cppcheck for linting
     - name: Lint with cppcheck
       run: |
-        cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 src/ include/
+        find src/ -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec cppcheck --enable=all --suppress=missingIncludeSystem --error-exitcode=1 {} +
