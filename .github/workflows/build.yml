@@ -18,12 +18,12 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++ clang-format cppcheck
+        sudo apt-get install -y cmake gcc g++ clang-format cppcheck
 
     # Format C/C++ files using clang-format
     - name: Format code
       run: |
-        find src/ include/ -type f \( -name "*.cpp" -o -name "*.h" \) -exec clang-format -i --style=Google {} \;
+        find src/ include/ -type f \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -i --style=Google {} \;
         git diff --exit-code || (echo "Code formatting issues detected. Please run clang-format locally." && exit 1)
 
     # Configure the project with CMake
